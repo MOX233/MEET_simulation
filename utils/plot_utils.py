@@ -13,7 +13,8 @@ def plot_loss_curve(loss_train, loss_val, rounds, args):
         plt.xlabel('epoch')
         plt.ylabel('train_loss')
         plt.legend()
-        plt.savefig('./save/loss_round{}_localiter{}_localbs{}.png'.format(rounds, args.local_iter, args.local_bs))
+        #plt.savefig('./save/loss_round{}_localiter{}_localbs{}.png'.format(rounds, args.local_iter, args.local_bs))
+        plt.savefig('./save/LOSS_RoundDuration{}_LocalTrainTime{}_RoundNum{}_LocalIterNum_{}_Localbs{}.png'.format(args.round_duration, args.local_train_time, rounds, args.local_iter, args.local_bs))
 
 
 def plot_acc_curve(acc_val, rounds, args):
@@ -24,4 +25,5 @@ def plot_acc_curve(acc_val, rounds, args):
     plt.xlabel('epoch')
     plt.ylabel('validation_accuracy')
     plt.legend()
-    plt.savefig('./save/acc_round{}_localiter{}_localbs{}.png'.format(rounds, args.local_iter, args.local_bs))
+    #plt.savefig('./save/acc_round{}_localiter{}_localbs{}.png'.format(rounds, args.local_iter, args.local_bs))
+    plt.savefig('./save/ACC_RoundDuration{}_LocalTrainTime{}_RoundNum{}_LocalIterNum_{}_Localbs{}.png'.format(args.round_duration, args.local_train_time, rounds, args.local_iter, args.local_bs))

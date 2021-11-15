@@ -73,6 +73,49 @@ def generate_routefile(args):
 
 
 def sumo_run(options):
+    # this script has been called from the command line. It will start sumo as a
+    # server, then connect and run
+
+    if args.nogui:
+        sumoBinary = checkBinary('sumo')
+    else:
+        sumoBinary = checkBinary('sumo-gui')
+
+    # first, generate the route file for this simulation
+    generate_routefile(args)
+
+    # this is the normal way of using traci. sumo is started as a
+    # subprocess and then the python script connects and runs
+    traci.start([sumoBinary, "-c", "sumo_data/road.sumocfg",
+                             "--tripinfo-output", "tripinfo.xml",
+                             '--step-length', str(args.step_length),])
+
+    """execute the TraCI control loop"""
+    step = 0
+    while traci.simulation.getMinExpectedNumber() > 0:
+        traci.simulationStep()
+        step += 1
+    traci.close()
+    sys.stdout.flush()
+
+def sumo_run_with_trajectoryInfo(options):
+    # this script has been called from the command line. It will start sumo as a
+    # server, then connect and run
+
+    if args.nogui:
+        sumoBinary = checkBinary('sumo')
+    else:
+        sumoBinary = checkBinary('sumo-gui')
+
+    # first, generate the route file for this simulation
+    generate_routefile(args)
+
+    # this is the normal way of using traci. sumo is started as a
+    # subprocess and then the python script connects and runs
+    traci.start([sumoBinary, "-c", "sumo_data/road.sumocfg",
+                             "--tripinfo-output", "tripinfo.xml",
+                             '--step-length', str(args.step_length),])
+
     """execute the TraCI control loop"""
     step = 0
     w = csv.writer(open(options.trajectoryInfo_path, 'w',newline=""))
@@ -92,32 +135,15 @@ def sumo_run(options):
 # this is the main entry point of this script
 if __name__ == "__main__":
     args = args_parser()
-    
-
-    # this script has been called from the command line. It will start sumo as a
-    # server, then connect and run
-
-    if args.nogui:
-        sumoBinary = checkBinary('sumo')
-    else:
-        sumoBinary = checkBinary('sumo-gui')
-
-    # first, generate the route file for this simulation
-    generate_routefile(args)
-
-    # this is the normal way of using traci. sumo is started as a
-    # subprocess and then the python script connects and runs
-    traci.start([sumoBinary, "-c", "sumo_data/road.sumocfg",
-                             "--tripinfo-output", "tripinfo.xml",
-                             '--step-length', str(args.step_length),])
-    sumo_run(args)
+    #sumo_run(args)
     car_tripinfo = read_tripInfo(tripInfo_path='tripinfo.xml')
     FL_table = generate_FLtable_from_tripInfo(args)
 
-    args.lidar_training_data='D:/Raymobtime_Dataset/Raymobtime_s008/baseline_data/lidar_input/lidar_train.npz'
-    args.beam_training_data = 'D:/Raymobtime_Dataset/Raymobtime_s008/baseline_data/beam_output/beams_output_train.npz'
-    args.lidar_validation_data = 'D:/Raymobtime_Dataset/Raymobtime_s008/baseline_data/lidar_input/lidar_validation.npz'
-    args.beam_validation_data = 'D:/Raymobtime_Dataset/Raymobtime_s008/baseline_data/beam_output/beams_output_validation.npz'
+    args.lidar_training_data='/home/ubuntu/Raymobtime_Dataset/Raymobtime_s008/baseline_data/lidar_input/lidar_train.npz'
+    args.beam_training_data = '/home/ubuntu/Raymobtime_Dataset/Raymobtime_s008/baseline_data/beam_output/beams_output_train.npz'
+    args.lidar_validation_data = '/home/ubuntu/Raymobtime_Dataset/Raymobtime_s008/baseline_data/lidar_input/lidar_validation.npz'
+    args.beam_validation_data = '/home/ubuntu/Raymobtime_Dataset/Raymobtime_s008/baseline_data/beam_output/beams_output_validation.npz'
     args.model_path = './save/model.pt'
 
+    args.local_iter = int(args.local_train_speed * args.local_train_time)
     FL_training(args,FL_table,car_tripinfo)

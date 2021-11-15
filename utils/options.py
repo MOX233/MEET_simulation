@@ -8,7 +8,8 @@ def args_parser():
     parser = argparse.ArgumentParser()
     # federated arguments
     parser.add_argument('--num_items', type=int, default=1024, help="number of data from every user's local dataset. type: int or list")
-    parser.add_argument('--local_iter', type=int, default=50, help="the number of local iterations: E")
+    #parser.add_argument('--local_iter', type=int, default=50, help="the number of local iterations: E")
+    parser.add_argument('--local_train_speed', type=float, default=10., help="the calculation speed of local iteration. local_train_speed * local_train_time = local_iter")
     parser.add_argument('--local_bs', type=int, default=64, help="local batch size: B")
     parser.add_argument('--lr', type=float, default=0.05, help="learning rate")
     parser.add_argument('--momentum', type=float, default=0.5, help="SGD momentum (default: 0.5)")
@@ -57,7 +58,7 @@ def args_parser():
                          default='./sumo_result/trajectory.csv', help="the file path where stores the trajectory infomation of cars")
     parser.add_argument("--step_length", type=float, 
                          default=0.1, help="sumo sampling interval")
-    parser.add_argument("--num_steps", type=float, 
+    parser.add_argument("--num_steps", type=int, 
                          default=10000, help="number of time steps, which means how many seconds the car flow takes")
     parser.add_argument("--round_duration", type=float, 
                          default=100, help="duration time of each round")

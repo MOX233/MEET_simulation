@@ -71,13 +71,13 @@ def FL_training(args,FL_table,car_tripinfo):
         if idxs_users == []:
 
             # print loss
-            loss_avg = loss_train[-1]
+            loss_avg = loss_train[-1] if round>0 else 1
             print('Round {:3d}, No car, Average loss {:.3f}'.format(round, loss_avg), end=' ')
             loss_train.append(loss_avg)
     
             # validation part
-            iter_val_loss = loss_val[-1]
-            [iter_val_top1_acc, iter_val_top5_acc, iter_val_top10_acc] = acc_val[-1]
+            iter_val_loss = loss_val[-1] if round>0 else 1
+            [iter_val_top1_acc, iter_val_top5_acc, iter_val_top10_acc] = acc_val[-1] if round>0 else [0. ,0. ,0.]
             loss_val.append(iter_val_loss)
             acc_val.append([iter_val_top1_acc, iter_val_top5_acc, iter_val_top10_acc])
             print("Validation Accuracy: Top-1:{:.4f}% Top-5:{:.4f}% Top-10:{:.4f}%".format(iter_val_top1_acc * 100., iter_val_top5_acc * 100., iter_val_top10_acc * 100.))
