@@ -135,7 +135,8 @@ def sumo_run_with_trajectoryInfo(options):
 # this is the main entry point of this script
 if __name__ == "__main__":
     args = args_parser()
-    #sumo_run(args)
+    if args.no_sumo_run == False:
+        sumo_run(args)
     car_tripinfo = read_tripInfo(tripInfo_path='tripinfo.xml')
     FL_table = generate_FLtable_from_tripInfo(args)
 

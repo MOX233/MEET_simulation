@@ -3,6 +3,7 @@ from .read_tripInfo import read_trajectoryInfo,read_tripInfo
 from .options import args_parser
 
 def generate_FLtable_from_tripInfo(args):
+    s.seed(args.seed)
     tripInfo = read_tripInfo()
     tripInfo_dict = {}
     for i in tripInfo:

@@ -8,7 +8,6 @@ def args_parser():
     parser = argparse.ArgumentParser()
     # federated arguments
     parser.add_argument('--num_items', type=int, default=1024, help="number of data from every user's local dataset. type: int or list")
-    #parser.add_argument('--local_iter', type=int, default=50, help="the number of local iterations: E")
     parser.add_argument('--local_train_speed', type=float, default=10., help="the calculation speed of local iteration. local_train_speed * local_train_time = local_iter")
     parser.add_argument('--local_bs', type=int, default=64, help="local batch size: B")
     parser.add_argument('--lr', type=float, default=0.05, help="learning rate")
@@ -26,7 +25,8 @@ def args_parser():
     parser.add_argument('--iid', action='store_true', default=True,  help='whether i.i.d. or not  Warning: non i.i.d. has not been realized')
     parser.add_argument('--verbose', action='store_true', default=False,  help='verbose print')
     parser.add_argument('--seed', type=int, default=1, help='random seed which make tests reproducible (default: 1)')
-    
+    parser.add_argument('--plot_save_path', type=str, default="default", help="The save path for the plots of loss and accuracy.")
+
     # dataset argumrnt by BeamSelection
     parser.add_argument("--lidar_training_data", nargs='+', type=str, help="LIDAR training data file, if you want to merge multiple"
                                                                        " datasets, simply provide a list of paths, as follows:"
@@ -52,6 +52,8 @@ def args_parser():
                         help="Path, where the .csv file with the predictions will be saved")
     
     # SUMO arguments
+    parser.add_argument("--no_sumo_run", action="store_true",
+                         default=False, help="run sumo simulation to generate tripinfo.xml")
     parser.add_argument("--nogui", action="store_true",
                          default=True, help="run the commandline version of sumo")
     parser.add_argument("--trajectoryInfo_path", type=str,

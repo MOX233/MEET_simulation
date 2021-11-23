@@ -18,7 +18,7 @@ from utils.sampling import Raymobtime_iid, Raymobtime_noniid
 from utils.update import LocalUpdate
 from utils.federate_learning_avg import FedAvg
 from utils.evaluator import test_beam_select
-from utils.plot_utils import plot_loss_curve, plot_acc_curve
+from utils.plot_utils import plot_loss_curve, plot_acc_curve, plot_loss_acc_curve
 
 def FL_training(args,FL_table,car_tripinfo):
     # parse args
@@ -106,12 +106,9 @@ def FL_training(args,FL_table,car_tripinfo):
             loss_val.append(iter_val_loss)
             acc_val.append([iter_val_top1_acc, iter_val_top5_acc, iter_val_top10_acc])
             print("Validation Accuracy: Top-1:{:.4f}% Top-5:{:.4f}% Top-10:{:.4f}%".format(iter_val_top1_acc * 100., iter_val_top5_acc * 100., iter_val_top10_acc * 100.))
-
-    # plot loss curve
-    plot_loss_curve(loss_train, loss_val, rounds, args)
-
-    # plot acc curve
-    plot_acc_curve(acc_val, rounds, args)
+            plot_loss_acc_curve(loss_train, loss_val, acc_val, rounds, args)
+    # plot loss and acc curve
+    # plot_loss_acc_curve(loss_train, loss_val, acc_val, rounds, args)
 
     # test part
     net_glob.eval()

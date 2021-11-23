@@ -41,4 +41,5 @@ Thumbs.db
 *.png
 *.csv
 *.txt
+tripinfo.xml
 test*
