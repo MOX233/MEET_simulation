@@ -41,5 +41,7 @@ Thumbs.db
 *.png
 *.csv
 *.txt
+*.sh
 tripinfo.xml
+work_diary.md
 test*
