@@ -18,16 +18,21 @@ def args_parser():
 
     # dataset arguments
     parser.add_argument('--split_ratio', type=float, default=0.9, help="Ratio for splitting original_dataset_train into dataset_train and dataset_validation")
+    parser.add_argument('--x_split_num', type=int, default=1, help="Split the training dataset for non-i.i.d. dataset by GPS location. x_split_num means how many splittings we take along the x axis.")
+    parser.add_argument('--y_split_num', type=int, default=1, help="Split the training dataset for non-i.i.d. dataset by GPS location. y_split_num means how many splittings we take along the y axis.")
+    parser.add_argument('--split_dict', type=int, default=0, help="Specifies which splitting method we will take for non-i.i.d. dataset. 0 means LOS_split_dict, 1 means coord_split_dict.")
 
     # other arguments
     parser.add_argument('--gpu', type=int, default=0, help="GPU ID, -1 for CPU")
     parser.add_argument('--dataset', type=str, default='Raymobtime', help="name of dataset")
-    parser.add_argument('--iid', action='store_true', default=True,  help='whether i.i.d. or not  Warning: non i.i.d. has not been realized')
+    parser.add_argument('--non_iid', action='store_true', default=False,  help='whether i.i.d. or not')
     parser.add_argument('--verbose', action='store_true', default=False,  help='verbose print')
     parser.add_argument('--seed', type=int, default=1, help='random seed which make tests reproducible (default: 1)')
     parser.add_argument('--plot_save_path', type=str, default="default", help="The save path for the plots of loss and accuracy.")
+    parser.add_argument('--log_save_path', type=str, default="default", help="The save path for the training log of loss and accuracy.")
 
     # dataset argumrnt by BeamSelection
+    parser.add_argument("--gps_data_path", nargs='+', type=str, help="GPS data file")
     parser.add_argument("--lidar_training_data", nargs='+', type=str, help="LIDAR training data file, if you want to merge multiple"
                                                                        " datasets, simply provide a list of paths, as follows:"
                                                                        " --lidar_training_data path_a.npz path_b.npz")

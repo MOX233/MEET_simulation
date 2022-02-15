@@ -140,7 +140,8 @@ if __name__ == "__main__":
     car_tripinfo = read_tripInfo(tripInfo_path='tripinfo.xml')
     FL_table = generate_FLtable_from_tripInfo(args)
 
-    args.lidar_training_data='/home/ubuntu/Raymobtime_Dataset/Raymobtime_s008/baseline_data/lidar_input/lidar_train.npz'
+    args.gps_data_path = '/home/ubuntu/GraduationProject/code/MEET_simulation/raymobtime_data/Raymobtime_s008/raw_data/CoordVehiclesRxPerScene_s008.csv'
+    args.lidar_training_data = '/home/ubuntu/Raymobtime_Dataset/Raymobtime_s008/baseline_data/lidar_input/lidar_train.npz'
     args.beam_training_data = '/home/ubuntu/Raymobtime_Dataset/Raymobtime_s008/baseline_data/beam_output/beams_output_train.npz'
     args.lidar_validation_data = '/home/ubuntu/Raymobtime_Dataset/Raymobtime_s008/baseline_data/lidar_input/lidar_validation.npz'
     args.beam_validation_data = '/home/ubuntu/Raymobtime_Dataset/Raymobtime_s008/baseline_data/beam_output/beams_output_validation.npz'

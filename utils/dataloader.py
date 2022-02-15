@@ -21,7 +21,7 @@ def beams_log_scale(y, thresholdBelowMax):
 
 def get_beam_output(output_file):
     thresholdBelowMax = 6
-
+    
     output_cache_file = np.load(output_file)
     yMatrix = output_cache_file['output_classification']
 
@@ -51,8 +51,8 @@ def lidar_to_2d(lidar_data_path):
     lidar_data1 = np.zeros_like(lidar_data)[:, :, :, 1]
 
     lidar_data1[np.max(lidar_data == 1, axis=-1)] = 1
-    lidar_data1[np.max(lidar_data == -2, axis=-1)] = -2
-    lidar_data1[np.max(lidar_data == -1, axis=-1)] = -1
+    lidar_data1[np.max(lidar_data == -2, axis=-1)] = -2 #vehicle
+    lidar_data1[np.max(lidar_data == -1, axis=-1)] = -1 #BS
 
     return lidar_data1
 

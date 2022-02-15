@@ -14,11 +14,12 @@ from torch.utils.data.dataloader import DataLoader
 from models.nets import Lidar2D
 from utils.dataloader import LidarDataset2D
 from utils.options import args_parser
-from utils.sampling import Raymobtime_iid, Raymobtime_noniid
+from utils.sampling import Raymobtime_iid, Raymobtime_noniid, get_gps_data
 from utils.update import LocalUpdate
 from utils.federate_learning_avg import FedAvg
 from utils.evaluator import test_beam_select
-from utils.plot_utils import plot_loss_curve, plot_acc_curve, plot_loss_acc_curve
+from utils.plot_utils import plot_loss_acc_curve
+from utils.log_utils import save_training_log
 
 def FL_training(args,FL_table,car_tripinfo):
     # parse args
@@ -38,10 +39,18 @@ def FL_training(args,FL_table,car_tripinfo):
         # split original dataset_train into dataset_train and dataset_val
         dataset_train, dataset_val = original_dataset_train.split(split_ratio=args.split_ratio)
 
-        if args.iid:
+        if not args.non_iid:
             dict_users = Raymobtime_iid(dataset_train, args.num_items, num_users)
         else:
-            dict_users = Raymobtime_noniid(dataset_train, num_users)
+            gps_data, LOS_split_dict, coord_split_dict = get_gps_data(args.gps_data_path, data_range=[0,len(dataset_train)], x_split_num=args.x_split_num, y_split_num=args.y_split_num)
+            if args.split_dict==0:
+                dict_users = Raymobtime_noniid(dataset_train, LOS_split_dict, args.num_items, num_users)
+                print("Using LOS_split_dict for non-i.i.d. dataset")
+            elif args.split_dict==1:
+                dict_users = Raymobtime_noniid(dataset_train, coord_split_dict, args.num_items, num_users)
+                print("Using coord_split_dict for non-i.i.d. dataset")
+            else:
+                exit('Error: unrecognized split_dict')
     else:
         exit('Error: unrecognized dataset')
     
@@ -75,7 +84,7 @@ def FL_training(args,FL_table,car_tripinfo):
             if loss_avg==None:
                 print('Round {:3d}, No Car, Average Loss None'.format(round), end=' ')
             else:
-                print('Round {:3d}, No Car, Average Loss {:.3f}'.format(round, loss_avg), end=' ')
+                print('Round {:3d}, No Car, Average Loss {:.5f}'.format(round, loss_avg), end=' ')
             loss_train.append(loss_avg)
     
             # validation part
@@ -87,8 +96,6 @@ def FL_training(args,FL_table,car_tripinfo):
             
         else:
             for idx in idxs_users:
-                #local = LocalUpdate(args=args, dataset=dataset_train, idxs=dict_users[idx])
-                #w, loss = local.train(net=copy.deepcopy(net_glob).to(args.device))
                 local = LocalUpdate(args=args, dataset=dataset_train, idxs=dict_users[idx], local_bs=args.local_bs)
                 w, loss = local.train(net=copy.deepcopy(net_glob).to(args.device), local_iter=args.local_iter)
                 w_locals.append(copy.deepcopy(w))
@@ -101,7 +108,7 @@ def FL_training(args,FL_table,car_tripinfo):
     
             # print loss
             loss_avg = sum(loss_locals) / len(loss_locals)
-            print('Round {:3d}, Car num: {:3d}, Average Loss {:.3f}'.format(round, len(idxs_users), loss_avg), end=' ')
+            print('Round {:3d}, Car num: {:3d}, Average Loss {:.5f}'.format(round, len(idxs_users), loss_avg), end=' ')
             loss_train.append(loss_avg)
     
             # validation part
@@ -110,14 +117,18 @@ def FL_training(args,FL_table,car_tripinfo):
             acc_val.append([iter_val_top1_acc, iter_val_top5_acc, iter_val_top10_acc])
             print("Validation Accuracy: Top-1:{:.4f}% Top-5:{:.4f}% Top-10:{:.4f}%".format(iter_val_top1_acc * 100., iter_val_top5_acc * 100., iter_val_top10_acc * 100.))
             plot_loss_acc_curve(loss_train, loss_val, acc_val, rounds, args)
+        save_training_log(args, loss_train, loss_val, acc_val)
     plot_loss_acc_curve(loss_train, loss_val, acc_val, rounds, args)
 
     # test part
     net_glob.eval()
 
     acc_train, loss_train = test_beam_select(net_glob, dataset_train, args) 
+    acc_val, loss_val = test_beam_select(net_glob, dataset_val, args) 
     acc_test, loss_test = test_beam_select(net_glob, dataset_test, args)    
     [top1_acc_train, top5_acc_train, top10_acc_train] = acc_train
+    [top1_acc_val, top5_acc_val, top10_acc_val] = acc_val
     [top1_acc_test, top5_acc_test, top10_acc_test] = acc_test
     print("Training accuracy: Top-1:{:.4f}% Top-5:{:.4f}% Top-10:{:.4f}%".format(top1_acc_train * 100., top5_acc_train * 100., top10_acc_train * 100.))
+    print("Validation accuracy: Top-1:{:.4f}% Top-5:{:.4f}% Top-10:{:.4f}%".format(top1_acc_val * 100., top5_acc_val * 100., top10_acc_val * 100.))
     print("Testing accuracy: Top-1:{:.4f}% Top-5:{:.4f}% Top-10:{:.4f}%".format(top1_acc_test * 100., top5_acc_test * 100., top10_acc_test * 100.))
