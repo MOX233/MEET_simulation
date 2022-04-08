@@ -46,3 +46,6 @@ tripinfo.xml
 work_diary.md
 test*
 save
+sumo_data
+raymobtime_data*
+.ipynb_checkpoints

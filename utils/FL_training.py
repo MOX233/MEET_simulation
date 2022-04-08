@@ -7,11 +7,12 @@ import random
 import numpy as np
 import torch
 import sys 
+import pickle as pkl
 sys.path.append("..") 
 
 from torch.utils.data.dataloader import DataLoader
 
-from models.nets import Lidar2D
+from utils.nets import Lidar2D
 from utils.dataloader import LidarDataset2D
 from utils.options import args_parser
 from utils.sampling import Raymobtime_iid, Raymobtime_noniid, get_gps_data
@@ -34,10 +35,20 @@ def FL_training(args,FL_table,car_tripinfo):
     # load dataset and split users
     num_users = len(car_tripinfo)
     if args.dataset == 'Raymobtime':
-        original_dataset_train = LidarDataset2D(lidar_data_path=args.lidar_training_data, beam_data_path=args.beam_training_data)
+
+        dataset_train = LidarDataset2D(lidar_data_path=args.lidar_training_data, beam_data_path=args.beam_training_data)
+        dataset_val = LidarDataset2D(lidar_data_path=args.lidar_validation_data, beam_data_path=args.beam_validation_data)
+        dataset_test = LidarDataset2D(lidar_data_path=args.lidar_test_data, beam_data_path=args.beam_test_data)
+
+        print("Training dataset size: {}".format(len(dataset_train)))
+        print("Validation dataset size: {}".format(len(dataset_val)))
+        print("Test dataset size: {}".format(len(dataset_test)))
+
+        """original_dataset_train = LidarDataset2D(lidar_data_path=args.lidar_training_data, beam_data_path=args.beam_training_data)
         dataset_test = LidarDataset2D(lidar_data_path=args.lidar_validation_data, beam_data_path=args.beam_validation_data)
         # split original dataset_train into dataset_train and dataset_val
-        dataset_train, dataset_val = original_dataset_train.split(split_ratio=args.split_ratio)
+        dataset_train, dataset_val = original_dataset_train.split(split_ratio=args.split_ratio)"""
+
 
         if not args.non_iid:
             dict_users = Raymobtime_iid(dataset_train, args.num_items, num_users)
@@ -113,9 +124,13 @@ def FL_training(args,FL_table,car_tripinfo):
     
             # validation part
             [iter_val_top1_acc, iter_val_top5_acc, iter_val_top10_acc], iter_val_loss = test_beam_select(net_glob, dataset_val, args)
+
+            #[iter_test_top1_acc, iter_test_top5_acc, iter_test_top10_acc], iter_test_loss = test_beam_select(net_glob, dataset_test, args)  
+
             loss_val.append(iter_val_loss)
             acc_val.append([iter_val_top1_acc, iter_val_top5_acc, iter_val_top10_acc])
             print("Validation Accuracy: Top-1:{:.4f}% Top-5:{:.4f}% Top-10:{:.4f}%".format(iter_val_top1_acc * 100., iter_val_top5_acc * 100., iter_val_top10_acc * 100.))
+            #print("Test Accuracy: Top-1:{:.4f}% Top-5:{:.4f}% Top-10:{:.4f}%".format(iter_test_top1_acc * 100., iter_test_top5_acc * 100., iter_test_top10_acc * 100.))
             plot_loss_acc_curve(loss_train, loss_val, acc_val, rounds, args)
         save_training_log(args, loss_train, loss_val, acc_val)
     plot_loss_acc_curve(loss_train, loss_val, acc_val, rounds, args)

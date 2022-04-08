@@ -54,14 +54,14 @@ def Raymobtime_iid(dataset, num_items, num_users=1):
         num_items = min([num_items, len(dataset)])
         dict_users, all_idxs = {}, [i for i in range(len(dataset))]
         for i in range(num_users):
-            dict_users[i] = set(np.random.choice(all_idxs, num_items, replace=False))
+            dict_users[i] = set(np.random.choice(all_idxs, num_items, replace=True))
         return dict_users
     elif type(num_items) == list:
         assert len(num_items) == num_users
         assert max(num_items) <= len(dataset)
         dict_users, all_idxs = {}, [i for i in range(len(dataset))]
         for i in range(num_users):
-            dict_users[i] = set(np.random.choice(all_idxs, num_items[i], replace=False))
+            dict_users[i] = set(np.random.choice(all_idxs, num_items[i], replace=True))
         return dict_users
     else:
         exit('The type of num_items is wrong!')

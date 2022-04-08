@@ -8,7 +8,7 @@ def args_parser():
     parser = argparse.ArgumentParser()
     # federated arguments
     parser.add_argument('--num_items', type=int, default=1024, help="number of data from every user's local dataset. type: int or list")
-    parser.add_argument('--local_train_speed', type=float, default=10., help="the calculation speed of local iteration. local_train_speed * local_train_time = local_iter")
+    parser.add_argument('--local_iter', type=float, default=10, help="Local iteration num")
     parser.add_argument('--local_bs', type=int, default=64, help="local batch size: B")
     parser.add_argument('--lr', type=float, default=0.05, help="learning rate")
     parser.add_argument('--momentum', type=float, default=0.5, help="SGD momentum (default: 0.5)")
@@ -57,6 +57,8 @@ def args_parser():
                         help="Path, where the .csv file with the predictions will be saved")
     
     # SUMO arguments
+    parser.add_argument("--sumo_data_dir", type=str, 
+                         default="./sumo_data", help="the directory where saves the necessary config files for SUMO running")
     parser.add_argument("--no_sumo_run", action="store_true",
                          default=False, help="run sumo simulation to generate tripinfo.xml")
     parser.add_argument("--nogui", action="store_true",
@@ -66,19 +68,19 @@ def args_parser():
     parser.add_argument("--step_length", type=float, 
                          default=0.1, help="sumo sampling interval")
     parser.add_argument("--num_steps", type=int, 
-                         default=10000, help="number of time steps, which means how many seconds the car flow takes")
+                         default=60000, help="number of time steps, which means how many seconds the car flow takes")
     parser.add_argument("--round_duration", type=float, 
                          default=100, help="duration time of each round")
-    parser.add_argument("--beta_download", type=float, 
-                         default=1, help="param of shift exponential distribution function for download delay")
-    parser.add_argument("--beta_upload", type=float, 
-                         default=1, help="param of shift exponential distribution function for upload delay")
-    parser.add_argument("--mu_download", type=float, 
-                         default=1, help="param of shift exponential distribution function for download delay")
-    parser.add_argument("--mu_upload", type=float, 
-                         default=1, help="param of shift exponential distribution function for upload delay")
-    parser.add_argument("--local_train_time", type=float, 
-                         default=5, help="local training time for each vehicle")
+    parser.add_argument("--delay_download", type=float,
+                        default=1, help="download delay")
+    parser.add_argument("--delay_upload", type=float,
+                        default=1, help="upload delay")
+
+    parser.add_argument("--mu_local_train", type=float,
+                        default=0.2, help="param of shift exponential distribution function for local training delay")
+    parser.add_argument("--beta_local_train", type=float,
+                        default=0.2, help="param of shift exponential distribution function for local training delay")
+
     parser.add_argument("--Lambda", type=float, 
                          default=0.1, help="arrival rate of car flow")
     parser.add_argument("--accel", type=float, 
