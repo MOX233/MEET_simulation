@@ -4,7 +4,7 @@
 
 import argparse
 
-def args_parser():
+def args_parser(args=None):
     parser = argparse.ArgumentParser()
     # federated arguments
     parser.add_argument('--num_items', type=int, default=1024, help="number of data from every user's local dataset. type: int or list")
@@ -84,9 +84,9 @@ def args_parser():
     parser.add_argument("--Lambda", type=float, 
                          default=0.1, help="arrival rate of car flow")
     parser.add_argument("--accel", type=float, 
-                         default=10, help="accelerate of car flow")
+                         default=100, help="accelerate of car flow")
     parser.add_argument("--decel", type=float, 
-                         default=20, help="decelerate of car flow")
+                         default=100, help="decelerate of car flow")
     parser.add_argument("--sigma", type=float, 
                          default=0, help="imperfection of drivers, which takes value on [0,1], with 0 meaning perfection and 1 meaning imperfection")
     parser.add_argument("--carLength", type=float, 
@@ -103,5 +103,9 @@ def args_parser():
                          default=0.5, help="")
     parser.add_argument("--speedFactoer_max", type=float, 
                          default=1.5, help="")
-    args = parser.parse_args()
+    if args==None:
+        args = parser.parse_args()
+    else:
+        args = parser.parse_args(args)
+    #args = parser.parse_args(['--sumo_data_dir','./sumo_data','--no_sumo_run', '--round_duration', '20'])
     return args

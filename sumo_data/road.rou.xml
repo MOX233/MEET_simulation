@@ -1,5 +1,5 @@
 <routes>
-        <vType id="typecar" accel="10" decel="20" sigma="0" length="5" minGap="2.5" maxSpeed="20" speedFactoer="normc(1, 0.1, 0.5, 1.5)" guiShape="passenger"/>
+        <vType id="typecar" accel="100" decel="100" sigma="0" length="5" minGap="2.5" maxSpeed="20" speedFactoer="normc(1, 0.1, 0.5, 1.5)" guiShape="passenger"/>
         <route id="right" edges="right1 right12 right2" />
         <route id="left" edges="left2 left21 left1" />
     <vehicle id="car_0" type="typecar" route="right" depart="8" />
